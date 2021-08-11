@@ -1,4 +1,4 @@
-package com.example.appmusic.Adapter;
+package com.example.appmusic.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,11 +8,10 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.appmusic.Activity.ItemClick;
-import com.example.appmusic.Model.Song;
+import com.example.appmusic.ui.ItemClick;
+import com.example.appmusic.model.Song;
 import com.example.appmusic.R;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +36,16 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         holder.txtId.setText(songArrayList.get(position).getmId());
         holder.txtName.setText(songArrayList.get(position).getmName());
         holder.txtTime.setText(songArrayList.get(position).getmTime());
+        TextView sName = holder.txtName;
+        TextView sTime = holder.txtTime;
+        holder.SetOnClickListener(new ItemClick(){
+
+            @Override
+            public void onItemClick(View view, int vitri) {
+
+            }
+        });
+
 
 
     }
@@ -59,6 +68,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         TextView txtName;
         TextView txtTime;
         private Song song;
+        ItemClick itemClick = null;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -68,15 +79,18 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    itemClick.oniTemClick(itemView,getAdapterPosition());
+                    itemClick.onItemClick(itemView,getAdapterPosition());
                 }
             });
+        }
+        public final void SetOnClickListener(ItemClick clickitem){
+            this.itemClick = clickitem;
         }
 
 
         @Override
         public void onClick(View v) {
-            itemClick.oniTemClick(v,getAdapterPosition());
+            itemClick.onItemClick(v,getAdapterPosition());
         }
     }
 }

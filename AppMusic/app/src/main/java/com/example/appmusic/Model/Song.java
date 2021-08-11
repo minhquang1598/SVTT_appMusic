@@ -1,4 +1,4 @@
-package com.example.appmusic.Model;
+package com.example.appmusic.model;
 
 public class Song {
     private String mName;
@@ -11,6 +11,11 @@ public class Song {
         this.mTime = mTime;
         this.mPath = mPath;
         this.mId = mId;
+    }
+    public Song(String mName, String mTime, String mPath) {
+        this.mName = mName;
+        this.mTime = mTime;
+        this.mPath = mPath;
     }
 
     public Song() {

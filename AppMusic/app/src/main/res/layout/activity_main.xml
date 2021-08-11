@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,20 +7,22 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    tools:context=".Activity.MainActivity">
+    tools:context=".ui.MainActivity">
 
 
-   <FrameLayout
+   <androidx.viewpager.widget.ViewPager
        android:layout_width="match_parent"
-       android:layout_height="wrap_content"
+       android:layout_height="0dp"
+       android:layout_weight="1"
+
        android:id="@+id/frameLayout"
        >
        <include layout="@layout/fragment_allsongs"/>
-   </FrameLayout>
+   </androidx.viewpager.widget.ViewPager>
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/mTablayout"
         android:layout_width="match_parent"
         android:layout_height="60dp" />
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>
