@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
-    ArrayList<Song> songArrayList;
+    ArrayList<Song> mSongArrayList;
     Context context;
     private ItemClick itemClick;
 
     public SongAdapter(ArrayList<Song> songArrayList , ItemClick itemClick) {
-        this.songArrayList = songArrayList;
+        this.mSongArrayList = songArrayList;
         this.itemClick = itemClick;
     }
 
@@ -33,9 +33,9 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder( SongAdapter.ViewHolder holder, int position) {
-        holder.txtId.setText(songArrayList.get(position).getmId());
-        holder.txtName.setText(songArrayList.get(position).getmName());
-        holder.txtTime.setText(songArrayList.get(position).getmTime());
+        holder.txtId.setText(mSongArrayList.get(position).getmId());
+        holder.txtName.setText(mSongArrayList.get(position).getmName());
+        holder.txtTime.setText(mSongArrayList.get(position).getmTime());
         TextView sName = holder.txtName;
         TextView sTime = holder.txtTime;
         holder.SetOnClickListener(new ItemClick(){
@@ -59,7 +59,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return songArrayList.size();
+        return mSongArrayList.size();
     }
 
 

@@ -4,14 +4,20 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -26,15 +32,16 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements  ItemClick{
+public class MainActivity extends AppCompatActivity implements  ItemClick, LoaderManager.LoaderCallbacks<Cursor> {
 
-    Toolbar toolbar;
-    ViewPager viewPager;
-    TabLayout tabLayout;
-    RecyclerView recyclerView;
-    ArrayList<Song> songArrayList;
-    SongAdapter songAdapter;
+    Toolbar mToolBar;
+    ViewPager mViewPager;
+    TabLayout mTabLayout;
+    RecyclerView mRecyclerView;
+    ArrayList<Song> mSongArrayList;
+    SongAdapter mSongAdapter;
     private final int PERMISSION_REQUEST_CODE = 1;
+    LoadersCallBack loadersCallBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,56 +54,75 @@ public class MainActivity extends AppCompatActivity implements  ItemClick{
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE,android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 PERMISSION_REQUEST_CODE );
         }else{
-            LoadData();
+
         }
 
 
         init();
     }
-    private void LoadData(){
-        DataSongs dataSongs = null;
-        Cursor songCursor =getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                null,null,null,null);
-        if(songCursor != null){
-            songCursor.moveToFirst();
-            do{
-                String songName =songCursor.getString(songCursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME));
-                String songDuration =songCursor.getString(songCursor.getColumnIndex(MediaStore.Video.Media.DURATION));
-                String songPath =songCursor.getString(songCursor.getColumnIndex(MediaStore.Video.Media.DATA));
-                dataSongs.addSong(new Song(songName,songDuration,songPath));
+    static final String[] CONTACTS_SUMMARY_PROJECTION = new String[] {
+            MediaStore.Video.Media._ID,
+            MediaStore.Video.Media.DISPLAY_NAME,
+            MediaStore.Video.Media.DURATION,
+            MediaStore.Video.Media.DATA
+    };
 
-
-            }while (songCursor.moveToNext());
+    String curFilter;
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // This is called when a new Loader needs to be created.  This
+        // sample only has one Loader, so we don't care about the ID.
+        // First, pick the base URI to use depending on whether we are
+        // currently filtering.
+        getLoaderManager().initLoader(0,null,loadersCallBack);
+        Uri baseUri;
+        if (curFilter != null) {
+            baseUri = Uri.withAppendedPath(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                    Uri.encode(curFilter));
+        } else {
+            baseUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         }
-        songArrayList = (ArrayList<Song>) dataSongs.getAllSongs();
-        songAdapter = new SongAdapter(songArrayList, (ItemClick) getApplicationContext());
-        LinearLayoutManager layout = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(layout);
-        recyclerView.setAdapter(songAdapter);
+
+        // Now create and return a CursorLoader that will take care of
+        // creating a Cursor for the data being displayed.
+        String select = "((" + MediaStore.Video.Media.DISPLAY_NAME + " NOTNULL) AND ("
+                + MediaStore.Video.Media.DURATION + "=1) AND ("
+                + MediaStore.Video.Media.DATA + " != '' ))";
+        return new CursorLoader(getApplicationContext(),baseUri,CONTACTS_SUMMARY_PROJECTION,
+                select,null, MediaStore.Video.Media.DISPLAY_NAME);
+    }
+
+    @Override
+    public void onLoadFinished( Loader<Cursor> loader, Cursor data) {
 
 
     }
 
     @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+
+    }
+
+
+    @Override
     public void onRequestPermissionsResult(int requestCode,  String[] permissions,  int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == PERMISSION_REQUEST_CODE){
-            if(grantResults == null && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(getApplicationContext(),"Cho phep truy cap",Toast.LENGTH_LONG).show();
-                LoadData();
+            if( grantResults[0] == PackageManager.PERMISSION_GRANTED){
+
             }
         }
     }
 
     private void init(){
 //        toolbar = findViewById(R.id.mToolbar);
-        viewPager = findViewById(R.id.frameLayout);
-        tabLayout = findViewById(R.id.mTablayout);
-        recyclerView = findViewById(R.id.recycler_View);
-        songAdapter = new SongAdapter(songArrayList,this);
+        mViewPager = findViewById(R.id.frameLayout);
+        mTabLayout = findViewById(R.id.mTablayout);
+        mRecyclerView = findViewById(R.id.recycler_View);
+        mSongAdapter = new SongAdapter(mSongArrayList,this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(songAdapter);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setAdapter(mSongAdapter);
 
     }
 
